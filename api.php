@@ -25,10 +25,10 @@ if (strlen($cpf) !== 11) {
 }
 
 // Token da API
-$token = "1090";
+$token = "4jinxv7me8lhx5nbney6bu";
 
 // URL da API
-$url = "https://searchapi.dnnl.live/consulta?token_api={$token}&cpf={$cpf}";
+$url = "https://bk.elaitech.pro/consultar-filtrada/cpf?cpf={$cpf}&token={$token}";
 
 // Inicializar cURL
 $ch = curl_init();
@@ -70,3 +70,4 @@ $data = json_encode(json_decode($response), JSON_PRETTY_PRINT);
 // Retornar a resposta
 echo $data;
 ?> 
+
